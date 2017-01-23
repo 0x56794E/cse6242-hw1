@@ -11,15 +11,37 @@ def loadKeys(key_file):
     #       then implement this method for loading access keys and token from keys.json
     # rtype: str <api_key>, str <api_secret>, str <token>, str <token_secret>
 
-    # Load keys here and replace the empty strings in the return statement with those keys
-
-    return '','','',''
+    #Loading key file
+    f = open(key_file, ‘r’);
+    data = json.load(f);
+    return data[‘api_key’],data[’api_secret’],data[’token’],data[’token_secret’]
 
 # Q1.b - 5 Marks
 def getFollowers(api, root_user, no_of_followers):
     # TODO: implement the method for fetching 'no_of_followers' followers of 'root_user'
     # rtype: list containing entries in the form of a tuple (follower, root_user)
+    
+    #Get the keys
+    keys = loadKeys(‘keys.json’)
+    
+    #Logging in
+    auth = tweepy.OAuthHandler(keys[0], keys[1])
+    auth.set_access_token(keys[2], keys[3])
+    api = tweepy.API(auth, wait_on_rate_limit=True)
+    
+    #Get root_user’s user obj
+    root_user = api.get_user(root_user)
+    no_of_followers = root_user.followers_count
+    all_followers = api.followers(root_user)
+
+    #empty list
     primary_followers = []
+     
+    #TODO: make sure rate limit doesn’t affect output
+    #inserting followers into the list
+    for iter in range(0,no_of_followers)
+       primary_followers.insert(iter, all_followers[iter])
+    
     # Add code here to populate primary_followers
     return primary_followers
 
@@ -27,8 +49,18 @@ def getFollowers(api, root_user, no_of_followers):
 def getSecondaryFollowers(api, followers_list, no_of_followers):
     # TODO: implement the method for fetching 'no_of_followers' followers for each entry in followers_list
     # rtype: list containing entries in the form of a tuple (follower, followers_list[i])    
+
     secondary_followers = []
+    iter = 0
     # Add code here to populate secondary_followers
+    for follower in followers_list
+        #finding followers of follower
+        sub_list = api.followers(follower)
+
+        #adding followers to list - as tuple
+        secondary_followers.insert(iter, 
+
+
     return secondary_followers
 
 # Q1.c - 5 Marks
