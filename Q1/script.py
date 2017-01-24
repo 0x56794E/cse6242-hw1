@@ -61,17 +61,27 @@ def getFriends(api, root_user, no_of_friends):
     # rtype: list containing entries in the form of a tuple (root_user, friend)
     
     #Get root_user obj
-    root_user_obj = api.get_user(root_user)
+    #root_user_obj = api.get_user(root_user)
     
     counter = 0
     primary_friends = []
     
-    for friend in root_user_obj.friends():
-        if counter >= 10:
+    #for friend in root_user_obj.friends():
+    #    if counter >= 10:
+    #        break
+    #    else:
+    #        counter += 1
+    #        primary_friends.append((root_user, friend))
+    
+    for user in tweepy.Cursor(api.friends, screen_name=root_user).items():
+        if counter == no_of_friends:
             break
         else:
+            primary_friends.append((root_user, user.screen_name))
+            print root_user + "'s friend: " + user.screen_name
             counter += 1
-            primary_friends.append((root_user, friend))
+    
+    
     
     # Add code here to populate primary_friends
     return primary_friends
@@ -81,7 +91,11 @@ def getSecondaryFriends(api, friends_list, no_of_friends):
     # TODO: implement the method for fetching 'no_of_friends' friends for each entry in friends_list
     # rtype: list containing entries in the form of a tuple (friends_list[i], friend)
     secondary_friends = []
+    
     # Add code here to populate secondary_friends
+    for friend_tuple in friends_list:
+        secondary_friends.extend(getFriends(api, friend_tuple[1], no_of_friends))
+    
     return secondary_friends
 
 # Q1.b, Q1.c - 6 Marks
@@ -94,8 +108,6 @@ def writeToFile(data, output_file):
         f.write(line[0] + ', ' + line[1] + '\n')
     
     pass
-
-
 
 
 """
@@ -137,12 +149,12 @@ def testSubmission():
     secondary_followers = getSecondaryFollowers(api, primary_followers, NO_OF_FOLLOWERS)
     followers = primary_followers + secondary_followers
 
-    #primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
-    #secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
-    #friends = primary_friends + secondary_friends
+    primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
+    secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
+    friends = primary_friends + secondary_friends
 
     writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
-    #writeToFile(friends, OUTPUT_FILE_FRIENDS)
+    writeToFile(friends, OUTPUT_FILE_FRIENDS)
 
 
 if __name__ == '__main__':
