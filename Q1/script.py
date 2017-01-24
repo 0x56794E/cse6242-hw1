@@ -5,43 +5,39 @@ import tweepy
 
 # You must use Python 2.7.x
 # Rate limit chart for Twitter REST API - https://dev.twitter.com/rest/public/rate-limits
-
+#VEEE: done
 def loadKeys(key_file):
     # TODO: put in your keys and tokens in the keys.json file,
     #       then implement this method for loading access keys and token from keys.json
     # rtype: str <api_key>, str <api_secret>, str <token>, str <token_secret>
 
     #Loading key file
-    f = open(key_file, ‘r’);
+    f = open(key_file, 'r')
     data = json.load(f);
-    return data[‘api_key’],data[’api_secret’],data[’token’],data[’token_secret’]
+    return data['api_key'],data['api_secret'],data['token'],data['token_secret']
 
 # Q1.b - 5 Marks
+# api: ref to the Twitter api
+# root user: username of root user
+# no_of_followers: max num of followers to fetch
 def getFollowers(api, root_user, no_of_followers):
     # TODO: implement the method for fetching 'no_of_followers' followers of 'root_user'
     # rtype: list containing entries in the form of a tuple (follower, root_user)
-    
-    #Get the keys
-    keys = loadKeys(‘keys.json’)
-    
-    #Logging in
-    auth = tweepy.OAuthHandler(keys[0], keys[1])
-    auth.set_access_token(keys[2], keys[3])
-    api = tweepy.API(auth, wait_on_rate_limit=True)
-    
-    #Get root_user’s user obj
-    root_user = api.get_user(root_user)
-    no_of_followers = root_user.followers_count
-    all_followers = api.followers(root_user)
-
-    #empty list
+        
+    print 'got user obj'
+        
+    #TODO: double check rate limit stuff => handle this
     primary_followers = []
-     
-    #TODO: make sure rate limit doesn’t affect output
-    #inserting followers into the list
-    for iter in range(0,no_of_followers)
-       primary_followers.insert(iter, all_followers[iter])
+    counter = 0
     
+    for user in tweepy.Cursor(api.followers, screen_name=root_user).items():
+        if counter == no_of_followers:
+            break
+        else:
+            primary_followers.append((user.screen_name, root_user))
+            print root_user + "'s follower: " + user.screen_name
+            counter += 1
+            
     # Add code here to populate primary_followers
     return primary_followers
 
@@ -51,23 +47,32 @@ def getSecondaryFollowers(api, followers_list, no_of_followers):
     # rtype: list containing entries in the form of a tuple (follower, followers_list[i])    
 
     secondary_followers = []
-    iter = 0
+    
     # Add code here to populate secondary_followers
-    for follower in followers_list
-        #finding followers of follower
-        sub_list = api.followers(follower)
-
-        #adding followers to list - as tuple
-        secondary_followers.insert(iter, 
-
-
+    for follower_tuple in followers_list:
+        #Get 10 followers for the current user
+        secondary_followers.extend(getFollowers(api, follower_tuple[0], no_of_followers))
+        
     return secondary_followers
 
 # Q1.c - 5 Marks
 def getFriends(api, root_user, no_of_friends):
     # TODO: implement the method for fetching 'no_of_friends' friends of 'root_user'
     # rtype: list containing entries in the form of a tuple (root_user, friend)
+    
+    #Get root_user obj
+    root_user_obj = api.get_user(root_user)
+    
+    counter = 0
     primary_friends = []
+    
+    for friend in root_user_obj.friends():
+        if counter >= 10:
+            break
+        else:
+            counter += 1
+            primary_friends.append((root_user, friend))
+    
     # Add code here to populate primary_friends
     return primary_friends
 
@@ -83,6 +88,11 @@ def getSecondaryFriends(api, friends_list, no_of_friends):
 def writeToFile(data, output_file):
     # write data to output_file
     # rtype: None
+    
+    f = open(output_file, 'w')
+    for line in data:
+        f.write(line[0] + ', ' + line[1] + '\n')
+    
     pass
 
 
@@ -127,12 +137,12 @@ def testSubmission():
     secondary_followers = getSecondaryFollowers(api, primary_followers, NO_OF_FOLLOWERS)
     followers = primary_followers + secondary_followers
 
-    primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
-    secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
-    friends = primary_friends + secondary_friends
+    #primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
+    #secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
+    #friends = primary_friends + secondary_friends
 
     writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
-    writeToFile(friends, OUTPUT_FILE_FRIENDS)
+    #writeToFile(friends, OUTPUT_FILE_FRIENDS)
 
 
 if __name__ == '__main__':
