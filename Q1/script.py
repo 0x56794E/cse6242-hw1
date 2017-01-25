@@ -81,8 +81,6 @@ def getFriends(api, root_user, no_of_friends):
             print root_user + "'s friend: " + user.screen_name
             counter += 1
     
-    
-    
     # Add code here to populate primary_friends
     return primary_friends
 
@@ -109,6 +107,33 @@ def writeToFile(data, output_file):
     
     pass
 
+def getMyFriends(api, root_user, no_of_friends):
+    # TODO: implement the method for fetching 'no_of_friends' friends of 'root_user'
+    # rtype: list containing entries in the form of a tuple (root_user, friend)
+    
+    #Get root_user obj
+    #root_user_obj = api.get_user(root_user)
+    
+    counter = 0
+    primary_friends = []
+    
+    #for friend in root_user_obj.friends():
+    #    if counter >= 10:
+    #        break
+    #    else:
+    #        counter += 1
+    #        primary_friends.append((root_user, friend))
+    
+    for user in tweepy.Cursor(api.friends).items():
+        if counter == no_of_friends:
+            break
+        else:
+            primary_friends.append((root_user, user.screen_name))
+            print root_user + "'s friend: " + user.screen_name
+            counter += 1
+    
+    # Add code here to populate primary_friends
+    return primary_friends
 
 """
 NOTE ON GRADING:
@@ -134,7 +159,7 @@ def testSubmission():
     OUTPUT_FILE_FOLLOWERS = 'followers.csv'
     OUTPUT_FILE_FRIENDS = 'friends.csv'
 
-    ROOT_USER = 'PoloChau'
+    ROOT_USER = '0x56794e'
     NO_OF_FOLLOWERS = 10
     NO_OF_FRIENDS = 10
 
@@ -145,17 +170,17 @@ def testSubmission():
     auth.set_access_token(token, token_secret)
     api = tweepy.API(auth)
 
-    primary_followers = getFollowers(api, ROOT_USER, NO_OF_FOLLOWERS)
-    secondary_followers = getSecondaryFollowers(api, primary_followers, NO_OF_FOLLOWERS)
-    followers = primary_followers + secondary_followers
+    #primary_followers = getFollowers(api, ROOT_USER, NO_OF_FOLLOWERS)
+    #secondary_followers = getSecondaryFollowers(api, primary_followers, NO_OF_FOLLOWERS)
+    #followers = primary_followers + secondary_followers
 
-    primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
-    secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
-    friends = primary_friends + secondary_friends
+    #primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
+    #secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
+    #friends = primary_friends + secondary_friends
 
-    writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
-    writeToFile(friends, OUTPUT_FILE_FRIENDS)
-
+    #writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
+    #writeToFile(friends, OUTPUT_FILE_FRIENDS)
+    writeToFile(getMyFriends(api, ROOT_USER, NO_OF_FRIENDS), "myfriends.csv")
 
 if __name__ == '__main__':
     testSubmission()
