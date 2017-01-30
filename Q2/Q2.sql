@@ -106,10 +106,19 @@ limit 10;
 -- [insert sql statement(s) below]
 
 -- Query sports that have more than 500 athletes
-select sport, count(distinct id) as a_count, sum(gold + silver + bronze) as total_medal
+create view most_played_sports as
+select sport, sum(gold + silver + bronze) as total_medals
 from athletes 
 group by sport
-having a_count > 500;
+having count(distinct id) > 500;
+
+-- Query pairs of sports s1 and s2 such that s1's total medals < s2's total medals
+
+select s1.sport, s2.sport
+from most_played_sports s1
+cross join most_played_sports s2 
+where s1.total_medals < s2.total_medals and s1.sport != s2.sport
+order by s1.sport asc, s2.sport asc;
 
 -- (h) Count total pairs 
 -- [insert sql statement(s) below]
