@@ -39,27 +39,36 @@ select '';
 
 -- (b) Build indexes
 -- [insert sql statement(s) below]
+create index athletes_country_index on athletes (nationality);
+create index countries_country_index on countries (code);
 
-
-select '';
 
 -- (c) Quick computations.
 -- [insert sql statement(s) below]
 
-
-select '';
+-- Total number of female athletes who won gold medals
+select count(distinct id)
+from athletes 
+where gender='female' and gold > 0;
+ 
+-- Total numbers of male athletes who won silver medals
+select count (distinct id)
+from athletes
+where gender='male' and silver > 0;
 
 -- (d) Who won the most medals? 
 -- [insert sql statement(s) below]
 
-
-select '';
+--Top 10 athletes who won the most total medals 
+select a.name, a.country, t.total_medals
+from (select id, (gold + silver + bronze) as total_medals from athletes) t
+join athletes a on a.id = t.id
+order by t.total_medals desc, a.name asc
+limit 10;
 
 -- (e) Worldwide medal leaderboard
 -- [insert sql statement(s) below]
 
-
-select '';
 
 -- (f) Performance leaderboard
 -- [insert sql statement(s) below]
