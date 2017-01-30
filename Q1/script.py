@@ -2,10 +2,12 @@ import csv
 import json
 import time
 import tweepy
+import traceback
+
+#TODO: take rate limit into account
 
 # You must use Python 2.7.x
 # Rate limit chart for Twitter REST API - https://dev.twitter.com/rest/public/rate-limits
-#VEEE: done
 def loadKeys(key_file):
     # TODO: put in your keys and tokens in the keys.json file,
     #       then implement this method for loading access keys and token from keys.json
@@ -16,15 +18,44 @@ def loadKeys(key_file):
     data = json.load(f);
     return data['api_key'],data['api_secret'],data['token'],data['token_secret']
 
+# Assusme that we only have 2 kinds of request - ask for followers and ask for friends
+# i.e.,  the method itself doesn't need any additional args
+def limit_handled(cursor):
+    
+    while True:
+        try:
+            yield cursor.next()
+        except tweepy.RateLimitError:
+            print "Got Rate limit error - sleeping for 60s"
+            time.sleep(60)
+        except Exception as e: 
+            traceback.print_exc()
+            
+            
+def getFollowers(api, root_user, no_of_followers):
+    primary_followers = []
+    counter = 0
+    print "finding followers for " + root_user
+    
+    for user in limit_handled(tweepy.Cursor(api.followers, screen_name=root_user).items()):
+        #add to list
+        if counter == no_of_followers:
+            print "Found enough followers. Exiting..."
+            break
+        else:
+            primary_followers.append((user.screen_name, root_user))
+            counter += 1
+            
+    return primary_followers
+
 # Q1.b - 5 Marks
 # api: ref to the Twitter api
 # root user: username of root user
 # no_of_followers: max num of followers to fetch
-def getFollowers(api, root_user, no_of_followers):
+# API LIMIT: 15 reqs/15mins => Sol: sleep 60s after every request
+def getFollowers2(api, root_user, no_of_followers):
     # TODO: implement the method for fetching 'no_of_followers' followers of 'root_user'
     # rtype: list containing entries in the form of a tuple (follower, root_user)
-        
-    print 'got user obj'
         
     #TODO: double check rate limit stuff => handle this
     primary_followers = []
@@ -46,6 +77,8 @@ def getSecondaryFollowers(api, followers_list, no_of_followers):
     # TODO: implement the method for fetching 'no_of_followers' followers for each entry in followers_list
     # rtype: list containing entries in the form of a tuple (follower, followers_list[i])    
 
+    print "\n\nFinding secondary followers"
+    
     secondary_followers = []
     
     # Add code here to populate secondary_followers
@@ -55,8 +88,23 @@ def getSecondaryFollowers(api, followers_list, no_of_followers):
         
     return secondary_followers
 
-# Q1.c - 5 Marks
 def getFriends(api, root_user, no_of_friends):
+    primary_friends = []
+    counter = 0
+    print "Finding friends for " + root_user
+    
+    for user in limit_handled(tweepy.Cursor(api.friends, screen_name=root_user).items()):
+        if counter == no_of_friends:
+            print "Found enough friends. Exiting..."
+            break
+        else:
+            primary_friends.append((root_user, user.screen_name))
+            counter += 1
+            
+    return primary_friends
+
+# Q1.c - 5 Marks
+def getFriends2(api, root_user, no_of_friends):
     # TODO: implement the method for fetching 'no_of_friends' friends of 'root_user'
     # rtype: list containing entries in the form of a tuple (root_user, friend)
     
@@ -107,34 +155,6 @@ def writeToFile(data, output_file):
     
     pass
 
-def getMyFriends(api, root_user, no_of_friends):
-    # TODO: implement the method for fetching 'no_of_friends' friends of 'root_user'
-    # rtype: list containing entries in the form of a tuple (root_user, friend)
-    
-    #Get root_user obj
-    #root_user_obj = api.get_user(root_user)
-    
-    counter = 0
-    primary_friends = []
-    
-    #for friend in root_user_obj.friends():
-    #    if counter >= 10:
-    #        break
-    #    else:
-    #        counter += 1
-    #        primary_friends.append((root_user, friend))
-    
-    for user in tweepy.Cursor(api.friends).items():
-        if counter == no_of_friends:
-            break
-        else:
-            primary_friends.append((root_user, user.screen_name))
-            print root_user + "'s friend: " + user.screen_name
-            counter += 1
-    
-    # Add code here to populate primary_friends
-    return primary_friends
-
 """
 NOTE ON GRADING:
 
@@ -159,10 +179,9 @@ def testSubmission():
     OUTPUT_FILE_FOLLOWERS = 'followers.csv'
     OUTPUT_FILE_FRIENDS = 'friends.csv'
 
-    ROOT_USER = '0x56794e'
+    ROOT_USER = 'PoloChau'
     NO_OF_FOLLOWERS = 10
     NO_OF_FRIENDS = 10
-
 
     api_key, api_secret, token, token_secret = loadKeys(KEY_FILE)
 
@@ -170,17 +189,18 @@ def testSubmission():
     auth.set_access_token(token, token_secret)
     api = tweepy.API(auth)
 
-    #primary_followers = getFollowers(api, ROOT_USER, NO_OF_FOLLOWERS)
-    #secondary_followers = getSecondaryFollowers(api, primary_followers, NO_OF_FOLLOWERS)
-    #followers = primary_followers + secondary_followers
+    primary_followers = getFollowers(api, ROOT_USER, NO_OF_FOLLOWERS)
+    secondary_followers = getSecondaryFollowers(api, primary_followers, NO_OF_FOLLOWERS)
+    followers = primary_followers + secondary_followers
 
-    #primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
+    primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
     #secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
-    #friends = primary_friends + secondary_friends
+    secondary_friends = []
+    friends = primary_friends + secondary_friends
 
-    #writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
-    #writeToFile(friends, OUTPUT_FILE_FRIENDS)
-    writeToFile(getMyFriends(api, ROOT_USER, NO_OF_FRIENDS), "myfriends.csv")
+    writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
+    writeToFile(friends, OUTPUT_FILE_FRIENDS)
+
 
 if __name__ == '__main__':
     testSubmission()
