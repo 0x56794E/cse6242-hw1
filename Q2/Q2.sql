@@ -33,7 +33,11 @@ Sqlite Olympics.db < q2.swl.txt > q2.out.
 
 -- (a) Import data
 -- [insert sql statement(s) below]
+.mode csv athletes
+.import athletes.csv athletes
 
+.mode csv countries
+.import countries.csv countries
 
 select '';
 
@@ -60,9 +64,10 @@ where gender='male' and silver > 0;
 -- [insert sql statement(s) below]
 
 --Top 10 athletes who won the most total medals 
-select a.name, a.country, t.total_medals
+select a.name, c.country, t.total_medals
 from (select id, (gold + silver + bronze) as total_medals from athletes) t
 join athletes a on a.id = t.id
+join countries c on c.code = a.nationality
 order by t.total_medals desc, a.name asc
 limit 10;
 
