@@ -131,8 +131,15 @@ where s1.total_medals < s2.total_medals and s1.sport != s2.sport);
 -- (i) Create and import data into FTS table movie_overview.
 -- [insert sql statement(s) below]
 
+-- Create table
+drop table if exists movie_overview;
+create virtual table movie_overview using fts4 (id integer, name text, year integer, overview text, popularity real, tokenize=',');
+       
+-- Import
+.mode csv movie_overview;
+.import movie-overview.txt movie_overview;
 
-select '';
+
 
 -- (i) part 1
 -- [insert sql statement(s) below]
