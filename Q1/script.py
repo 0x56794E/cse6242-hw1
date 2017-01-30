@@ -28,23 +28,48 @@ def limit_handled(cursor):
         except tweepy.RateLimitError:
             print "Got Rate limit error - sleeping for 60s"
             time.sleep(60)
+        except tweepy.TweepError:
+            if tweepy.TweepError.message[0]['code'] == 401:
+                print 'Private user; Moving on...'
+                break
         except Exception as e: 
             traceback.print_exc()
             
             
 def getFollowers(api, root_user, no_of_followers):
     primary_followers = []
-    counter = 0
+    
+    while True:
+        try:
+            print 'Finding followers for ' + root_user
+            for user in tweepy.Cursor(api.followers, screen_name=root_user).items(no_of_followers):
+                primary_followers.append((user.screen_name, root_user))
+            break
+        
+        except tweepy.RateLimitError:
+                print "Rate Limit Error. Sleeping for 60s..."
+                time.sleep(60)
+                continue
+            
+        except tweepy.TweepError:
+            print 'Got TweepError - could be 401. Break loop'
+            traceback.print_exc()
+            break
+        
+        except Exception as genE:
+            print 'Got general error - no idea what happened. break loop'
+            traceback.print_exc()
+            break
+        
+    return primary_followers
+
+def getFollowers1(api, root_user, no_of_followers):
+    primary_followers = []
+    
     print "finding followers for " + root_user
     
-    for user in limit_handled(tweepy.Cursor(api.followers, screen_name=root_user).items()):
-        #add to list
-        if counter == no_of_followers:
-            print "Found enough followers. Exiting..."
-            break
-        else:
-            primary_followers.append((user.screen_name, root_user))
-            counter += 1
+    for user in limit_handled(tweepy.Cursor(api.followers, screen_name=root_user).items(no_of_followers)):
+        primary_followers.append((user.screen_name, root_user))
             
     return primary_followers
 
@@ -77,7 +102,7 @@ def getSecondaryFollowers(api, followers_list, no_of_followers):
     # TODO: implement the method for fetching 'no_of_followers' followers for each entry in followers_list
     # rtype: list containing entries in the form of a tuple (follower, followers_list[i])    
 
-    print "\n\nFinding secondary followers"
+    print "\n\nFinding secondary followers\n"
     
     secondary_followers = []
     
@@ -193,13 +218,13 @@ def testSubmission():
     secondary_followers = getSecondaryFollowers(api, primary_followers, NO_OF_FOLLOWERS)
     followers = primary_followers + secondary_followers
 
-    primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
+    #primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
     #secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
-    secondary_friends = []
-    friends = primary_friends + secondary_friends
+    #secondary_friends = []
+    #friends = primary_friends + secondary_friends
 
     writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
-    writeToFile(friends, OUTPUT_FILE_FRIENDS)
+    #writeToFile(friends, OUTPUT_FILE_FRIENDS)
 
 
 if __name__ == '__main__':
