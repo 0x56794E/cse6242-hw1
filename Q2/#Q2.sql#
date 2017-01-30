@@ -1,10 +1,10 @@
-â€” Country with highest gap per capital
+œôòô Country with highest gap per capital
 Select country, gdp_per_capita 
 from countries
 order by gdp_per_capita desc
 limit 1
 
-â€” country with lowest avg bmi
+œôòô country with lowest avg bmi
 Select c.name, avg(bmi)
 From Country c
 Join Athele a on a.nationality = c.name
@@ -12,15 +12,15 @@ Group by c.name
 Order by avg(vmi) asc
 Limit 1
 
-â€”
+œôòô
 Select country avg_bmi
 from country c join athelete_name on athelete.nationality = country.name
 Order by a.bmi
 Limit 1
 
 
-â€”
-Count the number of moviesâ€™ names contain l but not h
+œôòô
+Count the number of moviesœôòù names contain l but not h
 Select count distinct m.name
 From Movies 
 Where names like
@@ -78,7 +78,13 @@ limit 10;
 -- sort by total medal desc then asc name
 -- output format country, gold_sum, silver_sum, bronze_sum
 
-select 
+select c.country, tmp.gold_sum, tmp.silver_sum, tmp.bronze_sum
+from (select a.nationality as code, sum(a.gold) as gold_sum, sum(a.silver) as silver_sum, sum(a.bronze) as bronze_sum
+      from athletes a
+      group by a.nationality) tmp
+join countries c on c.code = tmp.code
+order by (gold_sum + silver_sum + bronze_sum) desc, c.country asc
+limit 10;
 
 
 -- (f) Performance leaderboard
