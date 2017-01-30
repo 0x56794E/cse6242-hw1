@@ -176,7 +176,7 @@ def writeToFile(data, output_file):
     
     f = open(output_file, 'w')
     for line in data:
-        f.write(line[0] + ', ' + line[1] + '\n')
+        f.write(line[0] + ',' + line[1] + '\n')
     
     pass
 
