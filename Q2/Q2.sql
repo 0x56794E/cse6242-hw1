@@ -88,28 +88,23 @@ limit 10;
 
 -- (f) Performance leaderboard
 -- [insert sql statement(s) below]
-
+-- !!!!!IN-PROGRESSSSS: TODO: bmi, gdp
 -- top 10 countries w best perf ratio: total medals * 1000 / ath => simplified to just total medals /ath
 -- output format:
 -- country name, perf ratio, gdp per capita, avg bmi
-select c.country 
+select c.country, (0.0 + c_summary.a_count) / c_summary.total_medal as perf_rate, c.gdp_per_capita, c_summary.avg_bmi
 from 
-     (select a.nationality as code, count(distinct id) as a_count, sum(a.gold + a.silver + a.bronze) as total_medal, (total_medal / a_count) as perf_rate
+     (select a.nationality as code, count(distinct id) as a_count, sum(a.gold + a.silver + a.bronze) as total_medal, avg(a.weight/(a.height * a.height)) as avg_bmi
       from athletes a 
       group by  a.nationality
-      order by perf_rate desc
-      ) top_c
-join countries c on c.code = top_c.code
-order by perf_rat desc 
+      ) c_summary
+join countries c on c.code = c_summary.code
+order by perf_rate desc 
 limit 10;
 
 
-
-select '';
-
 -- (g) Creating views
 -- [insert sql statement(s) below]
-
 
 select '';
 
