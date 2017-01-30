@@ -78,11 +78,31 @@ limit 10;
 -- sort by total medal desc then asc name
 -- output format country, gold_sum, silver_sum, bronze_sum
 
-select 
-
+select c.country, tmp.gold_sum, tmp.silver_sum, tmp.bronze_sum
+from (select a.nationality as code, sum(a.gold) as gold_sum, sum(a.silver) as silver_sum, sum(a.bronze) as bronze_sum
+      from athletes a
+      group by a.nationality) tmp
+join countries c on c.code = tmp.code
+order by (gold_sum + silver_sum + bronze_sum) desc, c.country asc
+limit 10;
 
 -- (f) Performance leaderboard
 -- [insert sql statement(s) below]
+
+-- top 10 countries w best perf ratio: total medals * 1000 / ath => simplified to just total medals /ath
+-- output format:
+-- country name, perf ratio, gdp per capita, avg bmi
+select c.country 
+from 
+     (select a.nationality as code, count(distinct id) as a_count, sum(a.gold + a.silver + a.bronze) as total_medal, (total_medal / a_count) as perf_rate
+      from athletes a 
+      group by  a.nationality
+      order by perf_rate desc
+      ) top_c
+join countries c on c.code = top_c.code
+order by perf_rat desc 
+limit 10;
+
 
 
 select '';
