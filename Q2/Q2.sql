@@ -102,13 +102,16 @@ join countries c on c.code = c_summary.code
 order by perf_rate desc 
 limit 10;
 
-
 -- (g) Creating views
 -- [insert sql statement(s) below]
 
-select '';
+-- Query sports that have more than 500 athletes
+select sport, count(distinct id) as a_count, sum(gold + silver + bronze) as total_medal
+from athletes 
+group by sport
+having a_count > 500;
 
-       -- (h) Count total pairs 
+-- (h) Count total pairs 
 -- [insert sql statement(s) below]
 
 
