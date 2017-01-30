@@ -64,15 +64,21 @@ where gender='male' and silver > 0;
 -- [insert sql statement(s) below]
 
 --Top 10 athletes who won the most total medals 
-select a.name, c.country, t.total_medals
-from (select id, (gold + silver + bronze) as total_medals from athletes) t
-join athletes a on a.id = t.id
+select a.name, c.country, tmp.total_medals
+from (select id, (gold + silver + bronze) as total_medals from athletes) tmp
+join athletes a on a.id = tmp.id
 join countries c on c.code = a.nationality
-order by t.total_medals desc, a.name asc
+order by tmp.total_medals desc, a.name asc
 limit 10;
 
 -- (e) Worldwide medal leaderboard
 -- [insert sql statement(s) below]
+
+-- top ten countries winniing the most medals and their medal counts in ea category: g, s, b
+-- sort by total medal desc then asc name
+-- output format country, gold_sum, silver_sum, bronze_sum
+
+select 
 
 
 -- (f) Performance leaderboard
