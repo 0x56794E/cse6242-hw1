@@ -139,13 +139,12 @@ create virtual table movie_overview using fts4 (id integer, name text, year inte
 .mode csv movie_overview;
 .import movie-overview.txt movie_overview;
 
-
-
 -- (i) part 1
 -- [insert sql statement(s) below]
-
-
-select '';
+-- count number of moives w word love and NOT hate
+select id
+from movie_overview
+where overview
 
 -- (i) part 2
 -- [insert sql statement(s) below]
