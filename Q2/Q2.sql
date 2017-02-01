@@ -33,43 +33,34 @@ Sqlite Olympics.db < q2.swl.txt > q2.out.
 
 -- (a) Import data
 -- [insert sql statement(s) below]
-.mode csv athletes
 .import athletes.csv athletes
-
-.mode csv countries
 .import countries.csv countries
-
-select '';
 
 -- (b) Build indexes
 -- [insert sql statement(s) below]
-create index athletes_country_index on athletes (nationality);
-create index countries_country_index on countries (code);
-
+CREATE INDEX athletes_country_index ON athletes (nationality);
+CREATE INDEX countries_country_index ON countries (code);
 
 -- (c) Quick computations.
 -- [insert sql statement(s) below]
-
 -- Total number of female athletes who won gold medals
-select count(distinct id)
-from athletes 
-where gender='female' and gold > 0;
- 
+SELECT COUNT(DISTINCT id)
+FROM athletes
+WHERE gender='femaile' AND gold > 0;
+
 -- Total numbers of male athletes who won silver medals
-select count (distinct id)
-from athletes
-where gender='male' and silver > 0;
+SELECT COUNT(DISTINCT id)
+FROM athletes
+WHERE gender='male' AND silver > 0;
 
 -- (d) Who won the most medals? 
--- [insert sql statement(s) below]
-
 --Top 10 athletes who won the most total medals 
-select a.name, c.country, tmp.total_medals
-from (select id, (gold + silver + bronze) as total_medals from athletes) tmp
-join athletes a on a.id = tmp.id
-join countries c on c.code = a.nationality
-order by tmp.total_medals desc, a.name asc
-limit 10;
+SELECT a.name, c.country, tmp.total_medals
+FROM (SELECT id, (gold + silver + bronze) AS total_medals FROM athletes) tmp
+JOIN athletes a ON a.id = tmp.id
+JOIN countries c ON c.code = a.nationality
+ORDER BY tmp.total_medals DESC, a.name ASC
+LIMIT 10;
 
 -- (e) Worldwide medal leaderboard
 -- [insert sql statement(s) below]
@@ -77,14 +68,13 @@ limit 10;
 -- top ten countries winniing the most medals and their medal counts in ea category: g, s, b
 -- sort by total medal desc then asc name
 -- output format country, gold_sum, silver_sum, bronze_sum
-
-select c.country, tmp.gold_sum, tmp.silver_sum, tmp.bronze_sum
-from (select a.nationality as code, sum(a.gold) as gold_sum, sum(a.silver) as silver_sum, sum(a.bronze) as bronze_sum
-      from athletes a
-      group by a.nationality) tmp
-join countries c on c.code = tmp.code
-order by (gold_sum + silver_sum + bronze_sum) desc, c.country asc
-limit 10;
+SELECT c.country, tmp.gold_sum, tmp.silver_sum, tmp.bronze_sum
+FROM (SELECT a.nationality AS code, SUM (a.gold) AS gold_sum, SUM (a.silver) AS silver_sum, SUM (a.bronze) AS bronze_sum
+      FROM athletes a
+      GROUP BY a.nationality) tmp
+JOIN countries c ON c.code = tmp.code
+ORDER BY (gold_sum + silver_sum + bronze_sum) DESC, c.country ASC
+LIMIT 10;
 
 -- (f) Performance leaderboard
 -- [insert sql statement(s) below]
@@ -92,62 +82,57 @@ limit 10;
 -- top 10 countries w best perf ratio: total medals * 1000 / ath => simplified to just total medals /ath
 -- output format:
 -- country name, perf ratio, gdp per capita, avg bmi
-select c.country, (0.0 + c_summary.a_count) / c_summary.total_medal as perf_rate, c.gdp_per_capita, c_summary.avg_bmi
-from 
-     (select a.nationality as code, count(distinct id) as a_count, sum(a.gold + a.silver + a.bronze) as total_medal, avg(a.weight/(a.height * a.height)) as avg_bmi
-      from athletes a 
-      group by  a.nationality
+SELECT c.country, (0.0 + c_summary.a_count) / c_summary.total_medal AS perf_rate, c.gdp_per_capita, c_summary.avg_bmi
+FROM (SELECT a.nationality AS code, COUNT(DISTINCT id) AS a_count, SUM (a.gold + a.silver + a.bronze) AS total_medal, AVG(a.weight/(a.height * a.height)) AS avg_bmi
+      FROM athletes a 
+      GROUP BY  a.nationality
       ) c_summary
-join countries c on c.code = c_summary.code
-order by perf_rate desc 
-limit 10;
+JOIN countries c ON c.code = c_summary.code
+ORDER BY perf_rate DESC 
+LIMIT 10;
 
 -- (g) Creating views
 -- [insert sql statement(s) below]
 
 -- Query sports that have more than 500 athletes
-create view most_played_sports as
-select sport, sum(gold + silver + bronze) as total_medals
-from athletes 
-group by sport
-having count(distinct id) > 500;
+CREATE VIEW most_played_sport AS
+SELECT sport, SUM (gold + silver + bronze) AS total_medals
+FROM athletes 
+GROUP BY sport
+HAVING COUNT(DISTINCT id) > 500;
 
 -- Query pairs of sports s1 and s2 such that s1's total medals < s2's total medals
-
-select s1.sport, s2.sport
-from most_played_sports s1
-cross join most_played_sports s2 
-where s1.total_medals < s2.total_medals and s1.sport != s2.sport
-order by s1.sport asc, s2.sport asc;
+SELECT s1.sport, s2.sport
+FROM most_played_sports s1
+CROSS JOIN most_played_sports s2 
+WHERE s1.total_medals < s2.total_medals AND s1.sport != s2.sport
+ORDER BY s1.sport ASC, s2.sport ASC;
 
 -- (h) Count total pairs 
 -- [insert sql statement(s) below]
-select count(*) 
-from (select s1.sport, s2.sport
-from most_played_sports s1
-cross join most_played_sports s2
-where s1.total_medals < s2.total_medals and s1.sport != s2.sport); 
+SELECT COUNT(*) 
+FROM (SELECT s1.sport, s2.sport
+      FROM most_played_sports s1
+      CROSS JOIN most_played_sports s2
+      WHERE s1.total_medals < s2.total_medals AND s1.sport != s2.sport); 
 
 -- (i) Create and import data into FTS table movie_overview.
--- [insert sql statement(s) below]
-
 -- Create table
-drop table if exists movie_overview;
-create virtual table movie_overview using fts4 (id integer, name text, year integer, overview text, popularity real, tokenize=',');
+DROP TABLE if EXISTS movie_overview;
+CREATE VIRTUAL TABLE movie_overview USING fts4 (id integer, name text, year integer, overview text, popularity real);
        
 -- Import
-.mode csv movie_overview;
-.import movie-overview.txt movie_overview;
+.separator ,
+.import movie-overview.txt movie_overview
 
 -- (i) part 1
 -- [insert sql statement(s) below]
 -- count number of moives w word love and NOT hate
-select id
-from movie_overview
-where overview
+SELECT count (DISTINCT id)
+FROM movie_overview WHERE overview MATCH 'love NOT hate';
 
 -- (i) part 2
 -- [insert sql statement(s) below]
+-- list id, in asc order, of movies containing (1) love and (2) war in overiew
+-- and (3) NO FEWER than 6 terms in btw
 
-
-select '';
