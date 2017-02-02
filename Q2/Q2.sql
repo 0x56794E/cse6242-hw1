@@ -1,35 +1,57 @@
-— Country with highest gap per capital
-Select country, gdp_per_capita 
-from countries
-order by gdp_per_capita desc
-limit 1
+-- Country with highest gap per capital
+-- Select country, gdp_per_capita 
+-- from countries
+-- order by gdp_per_capita desc
+-- limit 1
 
-— country with lowest avg bmi
-Select c.name, avg(bmi)
-From Country c
-Join Athele a on a.nationality = c.name
-Group by c.name
-Order by avg(vmi) asc
-Limit 1
+-- — country with lowest avg bmi
+-- Select c.name, avg(bmi)
+-- From Country c
+-- Join Athele a on a.nationality = c.name
+-- Group by c.name
+-- Order by avg(vmi) asc
+-- Limit 1
 
-—
-Select country avg_bmi
-from country c join athelete_name on athelete.nationality = country.name
-Order by a.bmi
-Limit 1
+-- —
+-- Select country avg_bmi
+-- from country c join athelete_name on athelete.nationality = country.name
+-- Order by a.bmi
+-- Limit 1
 
 
-—
-Count the number of movies’ names contain l but not h
-Select count distinct m.name
-From Movies 
-Where names like
+-- —
+-- Count the number of movies’ names contain l but not h
+-- Select count distinct m.name
+-- From Movies 
+-- Where names like
 
-Sqlite Olympics.db < q2.swl.txt > q2.out.
+-- Sqlite Olympics.db < q2.swl.txt > q2.out.
 
 -- initial commands
 .headers off
 .separator ','
+
+-- Create tables
+DROP TABLE IF EXISTS athletes;
+CREATE TABLE athletes (
+id integer primary key not null,
+name text,
+nationality text,
+gender text,
+dob real,
+height real,
+weight int,
+sport text,
+gold int,
+silver int,
+bronze int);
+
+DROP TABLE IF EXISTS countries;
+CREATE TABLE countries (
+country text,
+code text,
+population integer,
+gdp_per_capita real);
 
 -- (a) Import data
 -- [insert sql statement(s) below]
@@ -46,7 +68,7 @@ CREATE INDEX countries_country_index ON countries (code);
 -- Total number of female athletes who won gold medals
 SELECT COUNT(DISTINCT id)
 FROM athletes
-WHERE gender='femaile' AND gold > 0;
+WHERE gender='female' AND gold > 0;
 
 -- Total numbers of male athletes who won silver medals
 SELECT COUNT(DISTINCT id)
@@ -95,6 +117,7 @@ LIMIT 10;
 -- [insert sql statement(s) below]
 
 -- Query sports that have more than 500 athletes
+DROP VIEW IF EXISTS most_played_sport;
 CREATE VIEW most_played_sport AS
 SELECT sport, SUM (gold + silver + bronze) AS total_medals
 FROM athletes 

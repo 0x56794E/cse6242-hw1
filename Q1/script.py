@@ -63,40 +63,6 @@ def getFollowers(api, root_user, no_of_followers):
         
     return primary_followers
 
-def getFollowers1(api, root_user, no_of_followers):
-    primary_followers = []
-    
-    print "finding followers for " + root_user
-    
-    for user in limit_handled(tweepy.Cursor(api.followers, screen_name=root_user).items(no_of_followers)):
-        primary_followers.append((user.screen_name, root_user))
-            
-    return primary_followers
-
-# Q1.b - 5 Marks
-# api: ref to the Twitter api
-# root user: username of root user
-# no_of_followers: max num of followers to fetch
-# API LIMIT: 15 reqs/15mins => Sol: sleep 60s after every request
-def getFollowers2(api, root_user, no_of_followers):
-    # TODO: implement the method for fetching 'no_of_followers' followers of 'root_user'
-    # rtype: list containing entries in the form of a tuple (follower, root_user)
-        
-    #TODO: double check rate limit stuff => handle this
-    primary_followers = []
-    counter = 0
-    
-    for user in tweepy.Cursor(api.followers, screen_name=root_user).items():
-        if counter == no_of_followers:
-            break
-        else:
-            primary_followers.append((user.screen_name, root_user))
-            print root_user + "'s follower: " + user.screen_name
-            counter += 1
-            
-    # Add code here to populate primary_followers
-    return primary_followers
-
 # Q1.b - 7 Marks
 def getSecondaryFollowers(api, followers_list, no_of_followers):
     # TODO: implement the method for fetching 'no_of_followers' followers for each entry in followers_list
@@ -115,46 +81,29 @@ def getSecondaryFollowers(api, followers_list, no_of_followers):
 
 def getFriends(api, root_user, no_of_friends):
     primary_friends = []
-    counter = 0
-    print "Finding friends for " + root_user
-    
-    for user in limit_handled(tweepy.Cursor(api.friends, screen_name=root_user).items()):
-        if counter == no_of_friends:
-            print "Found enough friends. Exiting..."
-            break
-        else:
-            primary_friends.append((root_user, user.screen_name))
-            counter += 1
+   
+    while True:
+            try:
+                print 'Finding friends for ' + root_user
+                for user in tweepy.Cursor(api.friends, screen_name=root_user).items(no_of_friends):
+                    primary_friends.append((root_user, user.screen_name))
+                break;
             
-    return primary_friends
-
-# Q1.c - 5 Marks
-def getFriends2(api, root_user, no_of_friends):
-    # TODO: implement the method for fetching 'no_of_friends' friends of 'root_user'
-    # rtype: list containing entries in the form of a tuple (root_user, friend)
-    
-    #Get root_user obj
-    #root_user_obj = api.get_user(root_user)
-    
-    counter = 0
-    primary_friends = []
-    
-    #for friend in root_user_obj.friends():
-    #    if counter >= 10:
-    #        break
-    #    else:
-    #        counter += 1
-    #        primary_friends.append((root_user, friend))
-    
-    for user in tweepy.Cursor(api.friends, screen_name=root_user).items():
-        if counter == no_of_friends:
-            break
-        else:
-            primary_friends.append((root_user, user.screen_name))
-            print root_user + "'s friend: " + user.screen_name
-            counter += 1
-    
-    # Add code here to populate primary_friends
+            except tweepy.RateLimitError:
+                    print 'Rate Limit Error. Sleeping for 60s..'
+                    time.sleep(60);
+                    continue;
+                
+            except tweepy.TweepError:
+                print 'Got TweepyError - assuming 401. Break loop'
+                traceback.print_exc()
+                break
+            
+            except Exception as genE:
+                print 'Got general error - no idea what happened. break loop'
+                traceback.print_exc()
+                break;
+            
     return primary_friends
 
 # Q1.c - 7 Marks
@@ -163,11 +112,13 @@ def getSecondaryFriends(api, friends_list, no_of_friends):
     # rtype: list containing entries in the form of a tuple (friends_list[i], friend)
     secondary_friends = []
     
-    # Add code here to populate secondary_friends
+    print '\n\nFinding secondary friends\n'
+    
     for friend_tuple in friends_list:
-        secondary_friends.extend(getFriends(api, friend_tuple[1], no_of_friends))
+            secondary_friends.extend(getFriends(api, friend_tuple[1], no_of_friends))
     
     return secondary_friends
+
 
 # Q1.b, Q1.c - 6 Marks
 def writeToFile(data, output_file):
@@ -219,12 +170,12 @@ def testSubmission():
     followers = primary_followers + secondary_followers
 
     #primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
-    #secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
-    #secondary_friends = []
-    #friends = primary_friends + secondary_friends
+    primary_friends = getFriends(api, ROOT_USER, NO_OF_FRIENDS)
+    secondary_friends = getSecondaryFriends(api, primary_friends, NO_OF_FRIENDS)
+    friends = primary_friends + secondary_friends
 
     writeToFile(followers, OUTPUT_FILE_FOLLOWERS)
-    #writeToFile(friends, OUTPUT_FILE_FRIENDS)
+    writeToFile(friends, OUTPUT_FILE_FRIENDS)
 
 
 if __name__ == '__main__':
