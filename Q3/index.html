@@ -8,22 +8,49 @@
         </script>
     
     	<style type="text/css">
-    
-    
+	    	.axis path,
+	    	.axis line
+	    	{
+	    		fill: none;
+	    		stroke: black;
+	    		shape-rendering: crispEdges;
+	    	}
+	    
+	    	.axis text
+	    	{
+	    		font-family: sans-serif;
+	    		font-size: 11px;
+	    	}
+    	
+    		.name
+    		{
+    			width: 500px;
+    			text-align: center;
+    			font-weight: bolder;
+    		}
     	</style>
     
     </head>
     <body>
        <script type="text/javascript">
-       var dataset = [
-           [5, 20], [480, 90], [250, 50], [100, 33], [330, 95],   [600, 150],
-           [410, 12], [475, 44], [25, 67], [85, 21], [220, 88]
-         
-         ];
+       var dataset = [];
+       
        var w = 500;
-       var h = 100;
-       var padding = 20;
+       var h = 500;
+       var padding = 30;
 
+       //Return random integer between [min, max]
+       var genInt = function (min, max)
+       {
+    	   return Math.floor(Math.random() * (max - min + 1)) + min;
+       }
+       
+       //Generate data randomly in range [0, 100]
+       for (var i = 0; i < 50; ++i)
+    	   dataset[i] = [genInt(0, 100), genInt(0, 100)];
+       
+        
+       
        //Scaling the plot       
        var xScale = d3.scale.linear()
        						.domain([0, d3.max(dataset, function (d) { return d[0]; })])
@@ -36,6 +63,18 @@
        var rScale = d3.scale.linear()
        						.domain([0, d3.max(dataset, function (d) { return d[1];})])
        						.range([2, 5]);
+       
+
+       //Setting up axis
+       var xAxis = d3.svg.axis()
+       				 .scale(xScale)
+       				 .orient("bottom")
+       				 .ticks(5);
+       
+       var yAxis = d3.svg.axis()
+       				 .scale(yScale)
+					 .orient("left")
+					 .ticks(5);
        
       //Create SVG element
        var svg = d3.select("body")
@@ -58,6 +97,7 @@
 		   		return rScale(d[1]);
 			   });
        
+       
        //Add label
        svg.selectAll("text")
        .data(dataset)
@@ -76,11 +116,23 @@
   		.attr('fill', 'red')
   		.attr('font-size','11px');
        
-       //Create scale
-       var scale = d3.scale.linear();
-       scale.domain([100, 500]);
-       scale.range([10, 250]);
+      
+       //Use the axis
+       svg.append("g")
+       	  .attr("class", "axis")
+       	  .attr("transform", "translate(0," + (h - padding) + ")")
+          .call(xAxis);
               
+       svg.append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(" + padding + ",0)")
+          .call(yAxis);
+      
+       //name
+       d3.select("body")
+          .append("div")
+       	  .text("Vy Thuy Nguyen")
+       	  .attr("class", "name");
        </script>
     </body>
 </html>     
