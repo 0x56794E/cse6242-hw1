@@ -1,32 +1,3 @@
--- Country with highest gap per capital
--- Select country, gdp_per_capita 
--- from countries
--- order by gdp_per_capita desc
--- limit 1
-
--- — country with lowest avg bmi
--- Select c.name, avg(bmi)
--- From Country c
--- Join Athele a on a.nationality = c.name
--- Group by c.name
--- Order by avg(vmi) asc
--- Limit 1
-
--- —
--- Select country avg_bmi
--- from country c join athelete_name on athelete.nationality = country.name
--- Order by a.bmi
--- Limit 1
-
-
--- —
--- Count the number of movies’ names contain l but not h
--- Select count distinct m.name
--- From Movies 
--- Where names like
-
--- Sqlite Olympics.db < q2.swl.txt > q2.out.
-
 -- initial commands
 .headers off
 .separator ','
@@ -100,7 +71,6 @@ LIMIT 10;
 
 -- (f) Performance leaderboard
 -- [insert sql statement(s) below]
--- !!!!!IN-PROGRESSSSS: TODO: bmi, gdp
 -- top 10 countries w best perf ratio: total medals * 1000 / ath => simplified to just total medals /ath
 -- output format:
 -- country name, perf ratio, gdp per capita, avg bmi
@@ -114,7 +84,6 @@ ORDER BY perf_rate DESC
 LIMIT 10;
 
 -- (g) Creating views
--- [insert sql statement(s) below]
 
 -- Query sports that have more than 500 athletes
 DROP VIEW IF EXISTS most_played_sport;

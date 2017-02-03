@@ -8,48 +8,79 @@
         </script>
     
     	<style type="text/css">
-    		div.bar {
-			    display: inline-block;
-			    width: 20px;
-			    height: 75px;   /* We'll override this later */
-			    background-color: teal;
-			}
+    
+    
     	</style>
     
     </head>
     <body>
        <script type="text/javascript">
-       var dataset =[];
-       for (var i = 0; i < 25; ++i)
-   	   {
-   			var newNum = Math.random() * 30;
-   			dataset.push(newNum);
-   	   }
-   	//d3.select("body").append("p").text("New paragraph!");
-   	
-//    	d3.select("body").selectAll("p")
-//        .data(dataset)
-//        .enter()
-//        .append("p")
-//        .style("color", function (d) {
-//        	if (d > 15)
-//        		return "red";
-//        	else 
-//        		return "black";
-//        })
-//        .text(function (d) { 
-//        	return "I can count up to " + d;
-//        	});
-   	
-	    	d3.select("body").selectAll("div")
-		    .data(dataset)
-		    .enter()
-		    .append("div")
-		    .attr("class", "bar")
-		    .style("height", function (d){
-		    	return d*5 + "px";
-		    })
-		    .style("margin-right", "2px");
+       var dataset = [
+           [5, 20], [480, 90], [250, 50], [100, 33], [330, 95],   [600, 150],
+           [410, 12], [475, 44], [25, 67], [85, 21], [220, 88]
+         
+         ];
+       var w = 500;
+       var h = 100;
+       var padding = 20;
+
+       //Scaling the plot       
+       var xScale = d3.scale.linear()
+       						.domain([0, d3.max(dataset, function (d) { return d[0]; })])
+       						.range([padding, w - padding * 2]);
+       
+       var yScale = d3.scale.linear()
+       						.domain([0, d3.max(dataset, function (d) { return d[1]; })])
+       						.range([h - padding, padding]);
+       
+       var rScale = d3.scale.linear()
+       						.domain([0, d3.max(dataset, function (d) { return d[1];})])
+       						.range([2, 5]);
+       
+      //Create SVG element
+       var svg = d3.select("body")
+                   .append("svg")
+                   .attr("width", w)
+                   .attr("height", h);
+      
+       svg.selectAll("circle")
+       .data(dataset)
+       .enter()
+       .append("circle")
+       .attr("cx", function(d) {
+        	return xScale(d[0]);
+   		})
+	   .attr("cy", function(d) {
+	        return yScale(d[1]);
+	   })
+	   .attr("r", function (d)
+			   {
+		   		return rScale(d[1]);
+			   });
+       
+       //Add label
+       svg.selectAll("text")
+       .data(dataset)
+       .enter()
+       .append("text")
+       .text(function (d)
+    		   {
+    	  			return d[0] + ", " + d[1]; 
+    		   })
+  		.attr('x', function (d) {
+  			return xScale(d[0]);
+  		})
+  		.attr('y', function (d) {
+  			return yScale(d[1]);
+  		})
+  		.attr('fill', 'red')
+  		.attr('font-size','11px');
+       
+       //Create scale
+       var scale = d3.scale.linear();
+       scale.domain([100, 500]);
+       scale.range([10, 250]);
+              
        </script>
     </body>
 </html>     
