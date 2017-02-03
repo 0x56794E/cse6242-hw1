@@ -1,0 +1,5 @@
+c(i) Number of unique values for each column:
+- Event: 1644
+- Venue: 126
+
+c(ii) GREL expression: value.toDate('yyyy-MM-dd','yyyy-MM-dd').toString('EEEE, MMMM dd, yyyy')

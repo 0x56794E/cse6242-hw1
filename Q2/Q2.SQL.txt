@@ -103,8 +103,8 @@ select '';
 -- [insert sql statement(s) below]
 
 -- Create view for sports that have more than 500 athletes
-DROP VIEW IF EXISTS most_played_sport;
-CREATE VIEW most_played_sport AS
+DROP VIEW IF EXISTS most_played_sports;
+CREATE VIEW most_played_sports AS
 SELECT sport, SUM (gold + silver + bronze) AS total_medals
 FROM athletes 
 GROUP BY sport

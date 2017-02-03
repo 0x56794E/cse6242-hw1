@@ -1,0 +1,15 @@
+[
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column date using expression grel:value.toDate('yyyy-MM-dd','yyyy-MM-dd').toString('EEEE, MMMM dd, yyyy')",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "date",
+    "expression": "grel:value.toDate('yyyy-MM-dd','yyyy-MM-dd').toString('EEEE, MMMM dd, yyyy')",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  }
+]
