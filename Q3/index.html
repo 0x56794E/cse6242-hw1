@@ -94,7 +94,16 @@
 	   })
 	   .attr("r", function (d)
 			   {
-		   		return rScale(d[1]);
+		   		return rScale(d[0]);
+			   })
+	   .attr("fill", function (d)
+			   {
+		   			//alert(d[0]);
+		   			console.log("My radius =" + rScale(d[0]) 
+		   			            + ";avgRad=" + rScale(d3.mean(dataset, function(d) {return d[0];})));
+		   			return (rScale(d[0]) > rScale(d3.mean(dataset, function(d) {return d[0];}))
+		   					? "blue"
+	   						: "green");
 			   });
        
        
