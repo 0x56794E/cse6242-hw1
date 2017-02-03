@@ -2,6 +2,9 @@
 .headers off
 .separator ','
 
+-- (a) Import data
+-- [insert sql statement(s) below]
+
 -- Create tables
 DROP TABLE IF EXISTS athletes;
 CREATE TABLE athletes (
@@ -24,18 +27,21 @@ code text,
 population integer,
 gdp_per_capita real);
 
--- (a) Import data
--- [insert sql statement(s) below]
 .import athletes.csv athletes
 .import countries.csv countries
+
+select '';
 
 -- (b) Build indexes
 -- [insert sql statement(s) below]
 CREATE INDEX athletes_country_index ON athletes (nationality);
 CREATE INDEX countries_country_index ON countries (code);
 
+select '';
+
 -- (c) Quick computations.
 -- [insert sql statement(s) below]
+
 -- Total number of female athletes who won gold medals
 SELECT COUNT(DISTINCT id)
 FROM athletes
@@ -46,7 +52,11 @@ SELECT COUNT(DISTINCT id)
 FROM athletes
 WHERE gender='male' AND silver > 0;
 
+select '';
+
 -- (d) Who won the most medals? 
+-- [insert sql statement(s) below]
+
 --Top 10 athletes who won the most total medals 
 SELECT a.name, c.country, tmp.total_medals
 FROM (SELECT id, (gold + silver + bronze) AS total_medals FROM athletes) tmp
@@ -54,6 +64,8 @@ JOIN athletes a ON a.id = tmp.id
 JOIN countries c ON c.code = a.nationality
 ORDER BY tmp.total_medals DESC, a.name ASC
 LIMIT 10;
+
+select '';
 
 -- (e) Worldwide medal leaderboard
 -- [insert sql statement(s) below]
@@ -69,6 +81,8 @@ JOIN countries c ON c.code = tmp.code
 ORDER BY (gold_sum + silver_sum + bronze_sum) DESC, c.country ASC
 LIMIT 10;
 
+select '';
+
 -- (f) Performance leaderboard
 -- [insert sql statement(s) below]
 -- top 10 countries w best perf ratio: total medals * 1000 / ath => simplified to just total medals /ath
@@ -83,9 +97,12 @@ JOIN countries c ON c.code = c_summary.code
 ORDER BY perf_rate DESC 
 LIMIT 10;
 
--- (g) Creating views
+select '';
 
--- Query sports that have more than 500 athletes
+-- (g) Creating views
+-- [insert sql statement(s) below]
+
+-- Create view for sports that have more than 500 athletes
 DROP VIEW IF EXISTS most_played_sport;
 CREATE VIEW most_played_sport AS
 SELECT sport, SUM (gold + silver + bronze) AS total_medals
@@ -100,6 +117,8 @@ CROSS JOIN most_played_sports s2
 WHERE s1.total_medals < s2.total_medals AND s1.sport != s2.sport
 ORDER BY s1.sport ASC, s2.sport ASC;
 
+select '';
+
 -- (h) Count total pairs 
 -- [insert sql statement(s) below]
 SELECT COUNT(*) 
@@ -108,11 +127,17 @@ FROM (SELECT s1.sport, s2.sport
       CROSS JOIN most_played_sports s2
       WHERE s1.total_medals < s2.total_medals AND s1.sport != s2.sport); 
 
+select '';
+
 -- (i) Create and import data into FTS table movie_overview.
+-- [insert sql statement(s) below]
+
 -- Create table
 DROP TABLE if EXISTS movie_overview;
 CREATE VIRTUAL TABLE movie_overview USING fts4 (id integer, name text, year integer, overview text, popularity real);
-       
+
+select '';
+
 -- Import
 .separator ,
 .import movie-overview.txt movie_overview
@@ -123,8 +148,11 @@ CREATE VIRTUAL TABLE movie_overview USING fts4 (id integer, name text, year inte
 SELECT count (DISTINCT id)
 FROM movie_overview WHERE overview MATCH 'love NOT hate';
 
+select '';
+
 -- (i) part 2
 -- [insert sql statement(s) below]
 -- list id, in asc order, of movies containing (1) love and (2) war in overiew
 -- and (3) NO FEWER than 6 terms in btw
+select '';
 

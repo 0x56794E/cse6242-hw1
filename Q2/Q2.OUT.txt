@@ -1,0 +1,55 @@
+
+
+290
+316
+
+Michael Phelps,United States,6
+Katie Ledecky,United States,5
+Simone Biles,United States,5
+Emma McKeon,Australia,4
+Katinka Hosszu,Hungary,4
+Madeline Dirado,United States,4
+Nathan Adrian,United States,4
+Penny Oleksiak,Canada,4
+Simone Manuel,United States,4
+Alexandra Raisman,United States,3
+
+United States,136,52,70
+Germany,49,44,66
+United Kingdom,63,54,24
+China,46,29,34
+Russia,51,25,31
+France,18,52,19
+Australia,23,34,25
+Italy,8,40,24
+Canada,4,4,61
+Japan,17,13,35
+
+Portugal,95.0,19222.15008,22.2283449159003
+India,55.0,1598.259034,22.7099479147731
+Egypt,38.0,3614.746766,24.3450423765344
+Qatar,37.0,73653.39443,24.3793921453094
+Mongolia,36.0,3967.829386,24.1659641959748
+Austria,35.5,43774.98517,22.2027912242206
+Algeria,30.0,4206.031232,22.8518795434104
+Mexico,30.0,9005.024265,22.7257822908787
+Dominican Republic,27.0,6468.473492,21.2274608727685
+Singapore,25.0,52888.74467,22.4484356770538
+
+athletics,aquatics
+cycling,aquatics
+cycling,athletics
+cycling,football
+cycling,rowing
+football,aquatics
+football,athletics
+football,rowing
+rowing,aquatics
+rowing,athletics
+
+10
+
+
+37
+
+
