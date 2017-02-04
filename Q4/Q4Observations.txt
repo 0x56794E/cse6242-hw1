@@ -3,3 +3,24 @@ c(i) Number of unique values for each column:
 - Venue: 126
 
 c(ii) GREL expression: value.toDate('yyyy-MM-dd','yyyy-MM-dd').toString('EEEE, MMMM dd, yyyy')
+
+c(iii)
+- Only nominal data: venue
+- Only ordinal data: status
+
+c(iv) if (isBlank(value),
+		false,
+		and(contains(toUppercase(value), "GERMAN"), contains(toUppercase(value), "ENGLISH")))
+
+c(v)
+if(isBlank(value),
+   value,
+   if (endsWith(trim(value), "_wotm"),
+       substring(trim(value), 0, length(trim(value)) - 6),
+       value))
+
+c(vi)
+
+
+
+

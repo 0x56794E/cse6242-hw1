@@ -1,0 +1,39 @@
+\"GERMAN\"), contains(toUppercase(value), \"ENGLISH\")))",
+    "onError": "set-to-blank"
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column call_number using expression grel:if(isBlank(value),\n   value,\n   if (endsWith(trim(value), \"_wotm\"),\n       substring(trim(value), 0, length(trim(value) - 6)),\n       value))",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "call_number",
+    "expression": "grel:if(isBlank(value),\n   value,\n   if (endsWith(trim(value), \"_wotm\"),\n       substring(trim(value), 0, length(trim(value) - 6)),\n       value))",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column call_number using expression grel:if(isBlank(value),\n   value,\n   if (endsWith(trim(value), \"_wotm\"),\n       substring(trim(value), 0, length(trim(value)) - 6),\n       value))",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": [
+        {
+          "mode": "text",
+          "caseSensitive": false,
+          "query": "_wotm",
+          "name": "call_number",
+          "type": "text",
+          "columnName": "call_number"
+        }
+      ]
+    },
+    "columnName": "call_number",
+    "expression": "grel:if(isBlank(value),\n   value,\n   if (endsWith(trim(value), \"_wotm\"),\n       substring(trim(value), 0, length(trim(value)) - 6),\n       value))",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  }
+]~
