@@ -160,7 +160,7 @@ select '';
 -- find All movies whose overview has war and love NO MORE than 6 terms apart using NEAR/6
 select id 
 from movie_overview
-where overview match '"war AND love" NOT "war NEAR/6 love"'
+where overview match '("war AND love") NOT ("war NEAR/6 love")'
 order by id asc;
 
 select '';

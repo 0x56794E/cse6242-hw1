@@ -1,0 +1,10 @@
+(1) Average node degree: 2.054
+=> Most users (considered in this exercise) follow or are followed by an average of about 2 other users.
+
+(2) 
+- Diameter of the graph: 4
+=> Among the set of considered users, it takes AT MOST 4 "hops" to go from one user to any other user. (e.g., to go from PoloChau to any user XYZ in the set of users we considered, one can pick any user in PoloChau's set of followers or followees, then repeat the process 3 more times to get to XYZ.)
+
+
+- Average path length: 3.674
+=> On average, it takes 3.674 hops to go from one user to any other user. 
